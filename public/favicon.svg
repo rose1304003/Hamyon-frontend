@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#064e3b"/>
+      <stop offset="50%" style="stop-color:#065f46"/>
+      <stop offset="100%" style="stop-color:#10b981"/>
+    </linearGradient>
+    <linearGradient id="walletGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fbbf24"/>
+      <stop offset="100%" style="stop-color:#f97316"/>
+    </linearGradient>
+    <linearGradient id="coinGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#fde047"/>
+      <stop offset="100%" style="stop-color:#fbbf24"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="512" height="512" rx="108" fill="url(#bgGradient)"/>
+  
+  <!-- Decorative circles -->
+  <circle cx="420" cy="100" r="80" fill="#10b981" opacity="0.3"/>
+  <circle cx="80" cy="420" r="60" fill="#34d399" opacity="0.2"/>
+  
+  <!-- Wallet body -->
+  <g filter="url(#shadow)">
+    <rect x="90" y="160" width="280" height="200" rx="24" fill="url(#walletGradient)"/>
+    <!-- Wallet flap -->
+    <path d="M90 200 Q90 160 130 160 L340 160 Q370 160 370 200 L370 220 Q370 240 340 240 L130 240 Q90 240 90 200 Z" fill="#f59e0b"/>
+    <!-- Wallet clasp -->
+    <rect x="170" y="210" width="60" height="30" rx="8" fill="#fde047"/>
+    <circle cx="200" cy="225" r="8" fill="#f97316"/>
+  </g>
+  
+  <!-- Coins -->
+  <g filter="url(#shadow)">
+    <!-- Coin 1 -->
+    <circle cx="380" cy="280" r="50" fill="url(#coinGradient)"/>
+    <circle cx="380" cy="280" r="38" fill="none" stroke="#f59e0b" stroke-width="4"/>
+    <text x="380" y="292" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#f59e0b" text-anchor="middle">$</text>
+    
+    <!-- Coin 2 -->
+    <circle cx="340" cy="350" r="40" fill="url(#coinGradient)"/>
+    <circle cx="340" cy="350" r="30" fill="none" stroke="#f59e0b" stroke-width="3"/>
+    <text x="340" y="360" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#f59e0b" text-anchor="middle">$</text>
+    
+    <!-- Coin 3 -->
+    <circle cx="420" cy="370" r="35" fill="url(#coinGradient)"/>
+    <circle cx="420" cy="370" r="26" fill="none" stroke="#f59e0b" stroke-width="3"/>
+    <text x="420" y="379" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#f59e0b" text-anchor="middle">$</text>
+  </g>
+  
+  <!-- Sparkles -->
+  <g fill="#fde047">
+    <path d="M150 120 L155 135 L170 140 L155 145 L150 160 L145 145 L130 140 L145 135 Z"/>
+    <path d="M420 180 L423 190 L433 193 L423 196 L420 206 L417 196 L407 193 L417 190 Z" transform="scale(0.8) translate(50, 20)"/>
+    <path d="M100 300 L103 310 L113 313 L103 316 L100 326 L97 316 L87 313 L97 310 Z" transform="scale(0.7) translate(20, 50)"/>
+  </g>
+</svg>
