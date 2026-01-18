@@ -16,13 +16,14 @@ export function AchievementsDisplay({ compact = true }: AchievementsDisplayProps
   const allAchievementIds = Object.keys(ACHIEVEMENTS_CONFIG);
   const unlockedCount = unlockedAchievements.length;
 
+  const limit = compact ? 6 : 8;
+
   const displayedAchievements = showAll
     ? allAchievementIds
-    : allAchievementIds.slice(0, 8);
-
+    : allAchievementIds.slice(0, limit);
 
   return (
-    <motion.div 
+    <motion.div
       className="glass rounded-2xl p-4"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -38,12 +39,13 @@ export function AchievementsDisplay({ compact = true }: AchievementsDisplayProps
             <p className="text-xs text-white/50">Moliyaviy muvaffaqiyatlar</p>
           </div>
         </div>
+
         <div className="flex items-center gap-2">
           <span className="text-sm text-white/60">
             {unlockedCount}/{allAchievementIds.length}
           </span>
           <div className="w-16 h-1.5 bg-white/10 rounded-full overflow-hidden">
-            <motion.div 
+            <motion.div
               className="h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-full"
               initial={{ width: 0 }}
               animate={{ width: `${(unlockedCount / allAchievementIds.length) * 100}%` }}
@@ -70,7 +72,7 @@ export function AchievementsDisplay({ compact = true }: AchievementsDisplayProps
         ))}
       </div>
 
-      {!showAll && allAchievementIds.length > 8 && (
+      {!showAll && allAchievementIds.length > limit && (
         <motion.button
           className="w-full mt-4 pt-3 border-t border-white/10 flex items-center justify-center gap-2 text-sm text-amber-400 font-medium"
           onClick={() => setShowAll(true)}
