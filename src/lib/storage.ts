@@ -166,7 +166,6 @@ export function incrementQuizzesAced(): UserStats {
 }
 
 export function resetPerfectQuizStreak(): void {
-  const stats = getUserStats();
   updateUserStats({ perfectQuizStreak: 0 });
 }
 
