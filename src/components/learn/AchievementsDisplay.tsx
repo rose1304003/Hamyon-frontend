@@ -16,9 +16,10 @@ export function AchievementsDisplay({ compact = true }: AchievementsDisplayProps
   const allAchievementIds = Object.keys(ACHIEVEMENTS_CONFIG);
   const unlockedCount = unlockedAchievements.length;
 
-  const displayedAchievements = showAll 
-    ? allAchievementIds 
+  const displayedAchievements = showAll
+    ? allAchievementIds
     : allAchievementIds.slice(0, 8);
+
 
   return (
     <motion.div 
