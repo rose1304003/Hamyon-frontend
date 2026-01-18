@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { ArrowLeft, GraduationCap, BookOpen, Award } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { getLessonProgress, getUserStats, getLearningStats } from "@/lib/storage";
 import { LESSONS, LESSON_MODULES, LessonData } from "@/lib/lessonData";
 import { LevelProgress } from "./LevelProgress";
