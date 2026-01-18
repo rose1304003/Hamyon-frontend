@@ -3,7 +3,7 @@ import { Check, X, ChevronRight, Trophy, ArrowLeft, BookOpen, Lightbulb, Zap, Cl
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { LessonData } from "@/lib/lessonData";
-import { saveLessonProgress, addXP, getUserStats, updateUserStats, incrementLessonsCompleted, incrementQuizzesAced, resetPerfectQuizStreak, checkAndUnlockAchievements } from "@/lib/storage";
+import { saveLessonProgress, addXP, incrementLessonsCompleted, incrementQuizzesAced, resetPerfectQuizStreak, checkAndUnlockAchievements } from "@/lib/storage";
 import { Progress } from "@/components/ui/progress";
 import { ACHIEVEMENTS_CONFIG } from "@/lib/gamification";
 
