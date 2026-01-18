@@ -26,9 +26,7 @@ export function LearnView() {
   const lessonsByModule = useMemo(() => {
     const grouped: Record<string, LessonData[]> = {};
     LESSONS.forEach((lesson) => {
-      if (!grouped[lesson.moduleId]) {
-        grouped[lesson.moduleId] = [];
-      }
+      if (!grouped[lesson.moduleId]) grouped[lesson.moduleId] = [];
       grouped[lesson.moduleId].push(lesson);
     });
     return grouped;
@@ -46,9 +44,13 @@ export function LearnView() {
     return result;
   }, [lessonsByModule, progress, refreshKey]);
 
-  // Get lessons for selected module
+  // Selected module helpers (safe)
   const currentModuleLessons = selectedModule ? lessonsByModule[selectedModule] || [] : [];
-  const currentModule = selectedModule ? LESSON_MODULES[selectedModule as keyof typeof LESSON_MODULES] : null;
+  const currentModule = selectedModule
+    ? LESSON_MODULES[selectedModule as keyof typeof LESSON_MODULES]
+    : null;
+
+  const selectedProgress = selectedModule ? moduleProgress[selectedModule] : null;
 
   // Handle lesson completion
   const handleLessonComplete = () => {
@@ -76,7 +78,7 @@ export function LearnView() {
     return (
       <div className="min-h-screen p-4 space-y-6" key={refreshKey}>
         {/* Header with back button */}
-        <motion.header 
+        <motion.header
           className="pt-2"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -93,8 +95,9 @@ export function LearnView() {
             <ArrowLeft className="h-4 w-4" />
             Modullar
           </motion.button>
+
           <div className="flex items-center gap-4">
-            <motion.div 
+            <motion.div
               className="text-4xl"
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
@@ -102,37 +105,42 @@ export function LearnView() {
             >
               {currentModule.icon}
             </motion.div>
+
             <div>
-              <h1 className="text-2xl font-bold text-white">
-                {currentModule.title}
-              </h1>
+              <h1 className="text-2xl font-bold text-white">{currentModule.title}</h1>
               <p className="text-sm text-white/60">
-                {moduleProgress[selectedModule]?.completed} / {moduleProgress[selectedModule]?.total} tugatildi
+                {(selectedProgress?.completed ?? 0)} / {(selectedProgress?.total ?? 0)} tugatildi
               </p>
             </div>
           </div>
         </motion.header>
 
         {/* Lessons List */}
-        <motion.div 
+        <motion.div
           className="glass rounded-2xl overflow-hidden"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          {currentModuleLessons.map((lesson, index) => (
-            <EnhancedLessonCard
-              key={lesson.id}
-              lesson={lesson}
-              isCompleted={progress[lesson.id]?.completed || false}
-              progress={progress[lesson.id]?.completed ? 100 : (progress[lesson.id]?.currentQuestion || 0) * (100 / lesson.quiz.length)}
-              onClick={() => {
-                setActiveLesson(lesson);
-                setViewMode("lesson");
-              }}
-              index={index}
-            />
-          ))}
+          {currentModuleLessons.map((lesson, index) => {
+            const isCompleted = progress[lesson.id]?.completed || false;
+            const currentQ = progress[lesson.id]?.currentQuestion || 0;
+            const percent = isCompleted ? 100 : currentQ * (100 / lesson.quiz.length);
+
+            return (
+              <EnhancedLessonCard
+                key={lesson.id}
+                lesson={lesson}
+                isCompleted={isCompleted}
+                progress={percent}
+                onClick={() => {
+                  setActiveLesson(lesson);
+                  setViewMode("lesson");
+                }}
+                index={index}
+              />
+            );
+          })}
         </motion.div>
       </div>
     );
@@ -142,7 +150,7 @@ export function LearnView() {
   return (
     <div className="min-h-screen p-4 space-y-5 pb-28" key={refreshKey}>
       {/* Header */}
-      <motion.header 
+      <motion.header
         className="pt-2"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -159,7 +167,7 @@ export function LearnView() {
       </motion.header>
 
       {/* Stats Summary */}
-      <motion.div 
+      <motion.div
         className="grid grid-cols-3 gap-3"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -170,11 +178,13 @@ export function LearnView() {
           <p className="text-xl font-bold text-white">{learningStats.lessonsCompleted}</p>
           <p className="text-xs text-white/50">Darslar</p>
         </div>
+
         <div className="glass rounded-xl p-3 text-center">
           <Award className="h-5 w-5 text-amber-400 mx-auto mb-1" />
           <p className="text-xl font-bold text-white">{learningStats.averageScore}%</p>
           <p className="text-xs text-white/50">O'rtacha ball</p>
         </div>
+
         <div className="glass rounded-xl p-3 text-center">
           <GraduationCap className="h-5 w-5 text-purple-400 mx-auto mb-1" />
           <p className="text-xl font-bold text-white">{learningStats.achievementsUnlocked}</p>
@@ -186,10 +196,7 @@ export function LearnView() {
       <LevelProgress totalXP={stats.totalXP} />
 
       {/* Streak Display */}
-      <StreakDisplay 
-        currentStreak={stats.streak} 
-        longestStreak={stats.longestStreak} 
-      />
+      <StreakDisplay currentStreak={stats.streak} longestStreak={stats.longestStreak} />
 
       {/* Achievements */}
       <AchievementsDisplay />
