@@ -110,6 +110,15 @@ export const translations = {
     startQuiz: { en: "Start Quiz", ru: "Начать тест", uz: "Testni boshlash" },
     perfectScore: { en: "Perfect Score! 🎉", ru: "Идеальный результат! 🎉", uz: "Mukammal natija! 🎉" },
     perfectBonus: { en: "+25 XP Bonus!", ru: "+25 XP Бонус!", uz: "+25 XP Bonus!" },
+
+    // ✅ Added for consistent RU/EN Learn tab
+    averageScore: { en: "Avg. score", ru: "Средний балл", uz: "O'rtacha ball" },
+    comingSoonTitle: { en: "Lessons are coming soon", ru: "Уроки скоро появятся", uz: "Darslar tez orada" },
+    comingSoonDesc: {
+      en: "We’re preparing the learning content in this language. For now, switch to Uzbek to study.",
+      ru: "Мы готовим учебные материалы на этом языке. Пока что переключитесь на узбекский, чтобы учиться.",
+      uz: "Bu tilda darslar tayyorlanmoqda. Hozircha o'qish uchun o'zbek tiliga o'ting.",
+    },
   },
 
   // Profile View
@@ -238,7 +247,7 @@ export type TranslationKey = keyof typeof translations;
 export function t(path: string, lang: Language): string {
   const keys = path.split(".");
   let current: any = translations;
-  
+
   for (const key of keys) {
     if (current[key] === undefined) {
       console.warn(`Translation not found: ${path}`);
@@ -246,10 +255,10 @@ export function t(path: string, lang: Language): string {
     }
     current = current[key];
   }
-  
+
   if (typeof current === "object" && current[lang]) {
     return current[lang];
   }
-  
+
   return path;
 }
