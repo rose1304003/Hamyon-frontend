@@ -8,7 +8,7 @@ import type { SavingsGoal } from '@/types';
 const GOAL_EMOJIS = ['🎯', '🏠', '🚗', '✈️', '💻', '📱', '💍', '🎓', '💪', '🎮', '🎸', '📷', '👶', '🏖️', '💰'];
 
 export default function GoalsList() {
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
   const { goals, loading, createGoal, updateGoal, contributeToGoal, deleteGoal } = useSavingsGoals();
   const { hapticFeedback } = useTelegram();
   
