@@ -1,6 +1,19 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Flame, BookOpen, PiggyBank, ChevronRight, Bell, Shield, CircleHelp, LogOut, X, Palette, Coins, Download } from "lucide-react";
+import {
+  Flame,
+  BookOpen,
+  PiggyBank,
+  ChevronRight,
+  Bell,
+  Shield,
+  HelpCircle,
+  LogOut,
+  X,
+  Palette,
+  Coins,
+  Download,
+} from "lucide-react";
 import { ProfileHeader, StatCard } from "@/components/profile";
 import { NotificationSettingsView, ThemeToggle, CurrencySettings, DataExport } from "@/components/settings";
 import { useLanguage, Language } from "@/lib/i18n";
@@ -32,7 +45,6 @@ export function ProfileView() {
 
   const userName = user?.first_name || t("home.student");
 
-  // Sub-view header component
   const SubViewHeader = ({ title }: { title: string }) => (
     <header className="pt-2 flex items-center gap-3 px-4">
       <button onClick={() => setCurrentView("main")} className="p-2 -ml-2 rounded-full hover:bg-white/10">
@@ -42,10 +54,9 @@ export function ProfileView() {
     </header>
   );
 
-  // Notifications view
   if (currentView === "notifications") {
     return (
-      <motion.div 
+      <motion.div
         className="space-y-6 p-4"
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -57,10 +68,9 @@ export function ProfileView() {
     );
   }
 
-  // Appearance view
   if (currentView === "appearance") {
     return (
-      <motion.div 
+      <motion.div
         className="space-y-6 p-4"
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -72,10 +82,9 @@ export function ProfileView() {
     );
   }
 
-  // Currency view
   if (currentView === "currency") {
     return (
-      <motion.div 
+      <motion.div
         className="space-y-6 p-4"
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -87,10 +96,9 @@ export function ProfileView() {
     );
   }
 
-  // Data export view
   if (currentView === "data") {
     return (
-      <motion.div 
+      <motion.div
         className="space-y-6 p-4"
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -103,7 +111,7 @@ export function ProfileView() {
   }
 
   return (
-    <motion.div 
+    <motion.div
       className="space-y-6 p-4"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -115,7 +123,6 @@ export function ProfileView() {
 
       <ProfileHeader name={userName} level={stats.level} xp={stats.totalXP % 100} xpToNext={100} />
 
-      {/* Statistics */}
       <div>
         <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3">{t("profile.statistics")}</h3>
         <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
@@ -125,7 +132,6 @@ export function ProfileView() {
         </div>
       </div>
 
-      {/* Language Selection */}
       <div>
         <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3">{t("profile.language")}</h3>
         <div className="glass rounded-2xl overflow-hidden">
@@ -148,45 +154,18 @@ export function ProfileView() {
         </div>
       </div>
 
-      {/* Settings */}
       <div>
         <h3 className="text-sm font-semibold text-white/60 uppercase tracking-wider mb-3">{t("profile.settings")}</h3>
         <div className="glass rounded-2xl overflow-hidden">
-          <SettingsButton 
-            icon={Bell} 
-            label={t("profile.notifications")} 
-            onClick={() => setCurrentView("notifications")} 
-          />
-          <SettingsButton 
-            icon={Palette} 
-            label={t("profile.appearance")} 
-            onClick={() => setCurrentView("appearance")} 
-          />
-          <SettingsButton 
-            icon={Coins} 
-            label={t("profile.currency")} 
-            onClick={() => setCurrentView("currency")} 
-          />
-          <SettingsButton 
-            icon={Download} 
-            label={t("profile.data")} 
-            onClick={() => setCurrentView("data")} 
-          />
-          <SettingsButton 
-            icon={Shield} 
-            label={t("profile.privacy")} 
-            onClick={() => {}} 
-          />
-          <SettingsButton 
-            icon={CircleHelp} 
-            label={t("profile.help")} 
-            onClick={() => {}} 
-            isLast 
-          />
+          <SettingsButton icon={Bell} label={t("profile.notifications")} onClick={() => setCurrentView("notifications")} />
+          <SettingsButton icon={Palette} label={t("profile.appearance")} onClick={() => setCurrentView("appearance")} />
+          <SettingsButton icon={Coins} label={t("profile.currency")} onClick={() => setCurrentView("currency")} />
+          <SettingsButton icon={Download} label={t("profile.data")} onClick={() => setCurrentView("data")} />
+          <SettingsButton icon={Shield} label={t("profile.privacy")} onClick={() => {}} />
+          <SettingsButton icon={HelpCircle} label={t("profile.help")} onClick={() => {}} isLast />
         </div>
       </div>
 
-      {/* Sign Out */}
       <button className="w-full glass rounded-2xl p-4 flex items-center justify-center gap-2 text-red-400 active:bg-red-400/10 transition-colors">
         <LogOut className="h-5 w-5" />
         <span className="font-medium">{t("profile.signOut")}</span>
@@ -204,8 +183,8 @@ interface SettingsButtonProps {
 
 function SettingsButton({ icon: Icon, label, onClick, isLast }: SettingsButtonProps) {
   return (
-    <button 
-      onClick={onClick} 
+    <button
+      onClick={onClick}
       className={cn(
         "w-full flex items-center justify-between p-4 active:bg-white/10 transition-colors",
         !isLast && "border-b border-white/10"
