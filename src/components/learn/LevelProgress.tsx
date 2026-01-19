@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { calculateLevel, getXPProgress, getLevelTitle, getLevelColor, LEVEL_THRESHOLDS } from "@/lib/gamification";
 import { Progress } from "@/components/ui/progress";
+import { useLanguage } from "@/lib/i18n";
 
 interface LevelProgressProps {
   totalXP: number;
@@ -10,10 +11,16 @@ interface LevelProgressProps {
 }
 
 export function LevelProgress({ totalXP, showDetails = true }: LevelProgressProps) {
+  const { language } = useLanguage();
   const level = calculateLevel(totalXP);
   const { current, next, progress } = getXPProgress(totalXP);
-  const title = getLevelTitle(level, "uz");
+  const title = getLevelTitle(level, language);
   const levelColor = getLevelColor(level);
+
+  const texts = {
+    nextLevel: { uz: "Keyingi darajaga", ru: "До следующего уровня", en: "To next level" },
+    xpNeeded: { uz: "XP kerak", ru: "XP нужно", en: "XP needed" },
+  };
 
   return (
     <motion.div 
@@ -82,10 +89,10 @@ export function LevelProgress({ totalXP, showDetails = true }: LevelProgressProp
         >
           <div className="flex items-center justify-between">
             <p className="text-sm text-white/60">
-              Keyingi darajaga
+              {texts.nextLevel[language]}
             </p>
             <p className="text-sm font-medium text-amber-400">
-              {(next - current).toLocaleString()} XP kerak
+              {(next - current).toLocaleString()} {texts.xpNeeded[language]}
             </p>
           </div>
         </motion.div>
