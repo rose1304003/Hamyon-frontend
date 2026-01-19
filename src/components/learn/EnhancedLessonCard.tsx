@@ -2,6 +2,7 @@ import { Check, Clock, Star, ChevronRight, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { LessonData } from "@/lib/lessonData";
+import { useLanguage } from "@/lib/i18n";
 
 interface EnhancedLessonCardProps {
   lesson: LessonData;
@@ -12,6 +13,8 @@ interface EnhancedLessonCardProps {
 }
 
 export function EnhancedLessonCard({ lesson, isCompleted, progress, onClick, index = 0 }: EnhancedLessonCardProps) {
+  const { language } = useLanguage();
+  
   const difficultyColors = {
     beginner: "bg-emerald-500/20 text-emerald-400",
     intermediate: "bg-amber-500/20 text-amber-400",
@@ -19,9 +22,14 @@ export function EnhancedLessonCard({ lesson, isCompleted, progress, onClick, ind
   };
 
   const difficultyLabels = {
-    beginner: "Boshlang'ich",
-    intermediate: "O'rta",
-    advanced: "Yuqori",
+    beginner: { en: "Beginner", ru: "Начинающий", uz: "Boshlang'ich" },
+    intermediate: { en: "Intermediate", ru: "Средний", uz: "O'rta" },
+    advanced: { en: "Advanced", ru: "Продвинутый", uz: "Yuqori" },
+  };
+
+  const texts = {
+    min: { en: "min", ru: "мин", uz: "daq" },
+    questions: { en: "questions", ru: "вопросов", uz: "savol" },
   };
 
   return (
@@ -88,19 +96,19 @@ export function EnhancedLessonCard({ lesson, isCompleted, progress, onClick, ind
               "text-xs font-medium px-2 py-0.5 rounded-full",
               difficultyColors[lesson.difficulty]
             )}>
-              {difficultyLabels[lesson.difficulty]}
+              {difficultyLabels[lesson.difficulty][language]}
             </span>
             
             {/* Duration */}
             <span className="flex items-center gap-1 text-xs text-white/50">
               <Clock className="h-3 w-3" />
-              {lesson.estimatedTime} daq
+              {lesson.estimatedTime} {texts.min[language]}
             </span>
             
             {/* Quiz count */}
             <span className="flex items-center gap-1 text-xs text-white/50">
               <Star className="h-3 w-3" />
-              {lesson.quiz.length} savol
+              {lesson.quiz.length} {texts.questions[language]}
             </span>
           </div>
           
