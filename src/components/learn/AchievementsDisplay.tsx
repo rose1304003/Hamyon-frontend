@@ -4,17 +4,26 @@ import { ACHIEVEMENTS_CONFIG } from "@/lib/gamification";
 import { AchievementBadge } from "./AchievementBadge";
 import { getUserStats } from "@/lib/storage";
 import { useState } from "react";
+import { useLanguage } from "@/lib/i18n";
 
 interface AchievementsDisplayProps {
   compact?: boolean;
 }
 
 export function AchievementsDisplay({ compact = true }: AchievementsDisplayProps) {
+  const { language } = useLanguage();
   const [showAll, setShowAll] = useState(false);
   const stats = getUserStats();
   const unlockedAchievements = stats.achievements || [];
   const allAchievementIds = Object.keys(ACHIEVEMENTS_CONFIG);
   const unlockedCount = unlockedAchievements.length;
+
+  const texts = {
+    achievements: { uz: "Yutuqlar", ru: "Достижения", en: "Achievements" },
+    subtitle: { uz: "Moliyaviy muvaffaqiyatlar", ru: "Финансовые успехи", en: "Financial achievements" },
+    showAll: { uz: "Hammasini ko'rish", ru: "Показать все", en: "Show all" },
+    showLess: { uz: "Kamroq ko'rsatish", ru: "Показать меньше", en: "Show less" },
+  };
 
   const limit = compact ? 6 : 8;
 
@@ -35,8 +44,8 @@ export function AchievementsDisplay({ compact = true }: AchievementsDisplayProps
             <Trophy className="h-5 w-5 text-amber-400" />
           </div>
           <div>
-            <h3 className="font-semibold text-white">Yutuqlar</h3>
-            <p className="text-xs text-white/50">Moliyaviy muvaffaqiyatlar</p>
+            <h3 className="font-semibold text-white">{texts.achievements[language]}</h3>
+            <p className="text-xs text-white/50">{texts.subtitle[language]}</p>
           </div>
         </div>
 
@@ -79,7 +88,7 @@ export function AchievementsDisplay({ compact = true }: AchievementsDisplayProps
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
-          Hammasini ko'rish
+          {texts.showAll[language]}
           <ChevronRight className="h-4 w-4" />
         </motion.button>
       )}
@@ -91,7 +100,7 @@ export function AchievementsDisplay({ compact = true }: AchievementsDisplayProps
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
-          Kamroq ko'rsatish
+          {texts.showLess[language]}
         </motion.button>
       )}
     </motion.div>
