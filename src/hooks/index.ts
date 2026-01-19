@@ -16,11 +16,23 @@ export function useTelegram() {
   useEffect(() => {
     if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
       const tg = window.Telegram.WebApp;
+      
+      // Tell Telegram the app is ready
+      tg.ready();
+      
       setWebApp(tg);
+      
+      // Debug logging
+      console.log('Telegram WebApp detected');
+      console.log('initData:', tg.initData ? 'present' : 'empty');
+      console.log('initDataUnsafe:', JSON.stringify(tg.initDataUnsafe));
       
       if (tg.initDataUnsafe?.user) {
         setUser(tg.initDataUnsafe.user);
         api.setAuth(tg.initDataUnsafe.user.id.toString(), tg.initData);
+        console.log('Auth set for user:', tg.initDataUnsafe.user.id);
+      } else {
+        console.warn('No user in initDataUnsafe');
       }
       
       // Expand the app to full height
@@ -30,6 +42,7 @@ export function useTelegram() {
       document.documentElement.style.setProperty('--tg-theme-bg-color', tg.backgroundColor);
       document.documentElement.style.setProperty('--tg-theme-text-color', tg.themeParams.text_color || '#000000');
     } else {
+      console.log('Telegram WebApp NOT detected, checking URL params');
       // Development mode - use URL param
       const params = new URLSearchParams(window.location.search);
       const telegramId = params.get('telegram_id');
@@ -237,6 +250,7 @@ declare global {
           secondary_bg_color?: string;
         };
         expand: () => void;
+        ready: () => void;
         close: () => void;
         showAlert: (message: string) => void;
         HapticFeedback?: {
