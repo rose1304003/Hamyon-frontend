@@ -1,8 +1,8 @@
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from "recharts";
-import { useLanguage } from "@/lib/i18n";
-import { getTransactions } from "@/lib/storage";
 import { useMemo } from "react";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { useLanguage } from "@/lib/i18n";
+import { getTransactions } from "@/lib/storage";
 
 type Lang = "en" | "ru" | "uz";
 
@@ -27,10 +27,23 @@ export function MonthlyTrend() {
     for (let i = 5; i >= 0; i--) {
       const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1).getTime();
-      const endOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999).getTime();
+      const endOfMonth = new Date(
+        date.getFullYear(),
+        date.getMonth() + 1,
+        0,
+        23,
+        59,
+        59,
+        999,
+      ).getTime();
 
       const monthTotal = transactions
-        .filter((tx) => tx.createdAt >= startOfMonth && tx.createdAt <= endOfMonth && tx.type === "expense")
+        .filter(
+          (tx) =>
+            tx.createdAt >= startOfMonth &&
+            tx.createdAt <= endOfMonth &&
+            tx.type === "expense",
+        )
         .reduce((sum, tx) => sum + tx.amount, 0);
 
       months.push({
