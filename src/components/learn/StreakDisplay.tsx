@@ -1,6 +1,7 @@
 import { Flame, Calendar, Trophy } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n";
 
 interface StreakDisplayProps {
   currentStreak: number;
@@ -8,13 +9,31 @@ interface StreakDisplayProps {
 }
 
 export function StreakDisplay({ currentStreak, longestStreak = 0 }: StreakDisplayProps) {
+  const { language } = useLanguage();
+  
+  // Day names in different languages
+  const dayNames: Record<string, string[]> = {
+    uz: ['Y', 'D', 'S', 'Ch', 'P', 'J', 'Sh'],
+    ru: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'],
+    en: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+  };
+
+  const texts = {
+    dailyStreak: { uz: "Kunlik streak", ru: "Ежедневная серия", en: "Daily Streak" },
+    longest: { uz: "Eng uzun", ru: "Лучший", en: "Best" },
+    days: { uz: "kun", ru: "дн.", en: "days" },
+    day: { uz: "kun", ru: "дн.", en: "day" },
+    weekStreak: { uz: "Ajoyib! Bir haftalik streak!", ru: "Отлично! Недельная серия!", en: "Amazing! One week streak!" },
+    keepGoing: { uz: "Zo'r ketayapsiz! Davom eting!", ru: "Отлично идёте! Продолжайте!", en: "Great progress! Keep going!" },
+    goodStart: { uz: "Yaxshi boshlandingiz!", ru: "Хорошее начало!", en: "Good start!" },
+  };
+
   // Generate last 7 days
   const days = Array.from({ length: 7 }, (_, i) => {
     const date = new Date();
     date.setDate(date.getDate() - (6 - i));
-    const dayNames = ['Y', 'D', 'S', 'Ch', 'P', 'J', 'Sh']; // Uzbek day names
     return {
-      day: dayNames[date.getDay()],
+      day: dayNames[language][date.getDay()],
       isActive: i >= 7 - Math.min(currentStreak, 7),
       isToday: i === 6,
     };
@@ -51,10 +70,10 @@ export function StreakDisplay({ currentStreak, longestStreak = 0 }: StreakDispla
             )} />
           </motion.div>
           <div>
-            <h3 className="font-semibold text-white">Kunlik streak</h3>
+            <h3 className="font-semibold text-white">{texts.dailyStreak[language]}</h3>
             <div className="flex items-center gap-2 text-xs text-white/60">
               <Trophy className="h-3 w-3" />
-              <span>Eng uzun: {longestStreak} kun</span>
+              <span>{texts.longest[language]}: {longestStreak} {texts.days[language]}</span>
             </div>
           </div>
         </div>
@@ -71,7 +90,7 @@ export function StreakDisplay({ currentStreak, longestStreak = 0 }: StreakDispla
           >
             {currentStreak}
           </motion.p>
-          <p className="text-xs text-white/60">kun</p>
+          <p className="text-xs text-white/60">{texts.day[language]}</p>
         </div>
       </div>
 
@@ -122,10 +141,10 @@ export function StreakDisplay({ currentStreak, longestStreak = 0 }: StreakDispla
         >
           <p className="text-xs text-center text-white/60">
             {currentStreak >= 7 
-              ? "🎉 Ajoyib! Bir haftalik streak!" 
+              ? `🎉 ${texts.weekStreak[language]}` 
               : currentStreak >= 3 
-                ? "🔥 Zo'r ketayapsiz! Davom eting!"
-                : "💪 Yaxshi boshlandingiz!"}
+                ? `🔥 ${texts.keepGoing[language]}`
+                : `💪 ${texts.goodStart[language]}`}
           </p>
         </motion.div>
       )}
