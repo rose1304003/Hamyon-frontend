@@ -1,6 +1,37 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import api from '@/services/api';
 import type { DashboardData, SavingsGoal, Transaction, Category } from '@/types';
+
+// Global auth state to track if authentication is ready
+let authReady = false;
+let authReadyPromise: Promise<boolean> | null = null;
+let authReadyResolve: ((value: boolean) => void) | null = null;
+
+// Create promise that resolves when auth is ready
+function getAuthReadyPromise(): Promise<boolean> {
+  if (!authReadyPromise) {
+    authReadyPromise = new Promise((resolve) => {
+      authReadyResolve = resolve;
+      // If auth is already ready, resolve immediately
+      if (authReady) {
+        resolve(true);
+      }
+    });
+  }
+  return authReadyPromise;
+}
+
+function setAuthReady() {
+  authReady = true;
+  if (authReadyResolve) {
+    authReadyResolve(true);
+  }
+}
+
+// Wait for auth to be ready before making API calls
+export async function waitForAuth(): Promise<boolean> {
+  return getAuthReadyPromise();
+}
 
 // Hook to get Telegram Web App data
 export function useTelegram() {
@@ -12,48 +43,105 @@ export function useTelegram() {
     username?: string;
     language_code?: string;
   } | null>(null);
+  const [isReady, setIsReady] = useState(false);
+  const initAttempts = useRef(0);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-      const tg = window.Telegram.WebApp;
-      
-      // Tell Telegram the app is ready
-      tg.ready();
-      
-      setWebApp(tg);
-      
-      // Debug logging
-      console.log('Telegram WebApp detected');
-      console.log('initData:', tg.initData ? 'present' : 'empty');
-      console.log('initDataUnsafe:', JSON.stringify(tg.initDataUnsafe));
-      
-      if (tg.initDataUnsafe?.user) {
-        setUser(tg.initDataUnsafe.user);
-        api.setAuth(tg.initDataUnsafe.user.id.toString(), tg.initData);
-        console.log('Auth set for user:', tg.initDataUnsafe.user.id);
-      } else {
-        console.warn('No user in initDataUnsafe');
+    const initTelegram = () => {
+      if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+        const tg = window.Telegram.WebApp;
+        
+        // Tell Telegram the app is ready
+        tg.ready();
+        
+        setWebApp(tg);
+        
+        // Debug logging
+        console.log('Telegram WebApp detected');
+        console.log('initData:', tg.initData ? 'present' : 'empty');
+        console.log('initDataUnsafe:', JSON.stringify(tg.initDataUnsafe));
+        
+        if (tg.initDataUnsafe?.user) {
+          setUser(tg.initDataUnsafe.user);
+          api.setAuth(tg.initDataUnsafe.user.id.toString(), tg.initData);
+          console.log('Auth set for user:', tg.initDataUnsafe.user.id);
+          setIsReady(true);
+          setAuthReady();
+          return true;
+        } else if (tg.initData) {
+          // initData exists but user not parsed yet - try to extract from initData
+          try {
+            const params = new URLSearchParams(tg.initData);
+            const userParam = params.get('user');
+            if (userParam) {
+              const userData = JSON.parse(decodeURIComponent(userParam));
+              if (userData?.id) {
+                setUser(userData);
+                api.setAuth(userData.id.toString(), tg.initData);
+                console.log('Auth set from initData parse:', userData.id);
+                setIsReady(true);
+                setAuthReady();
+                return true;
+              }
+            }
+          } catch (e) {
+            console.error('Failed to parse initData:', e);
+          }
+        }
+        
+        // Expand the app to full height
+        tg.expand();
+        
+        // Set theme
+        document.documentElement.style.setProperty('--tg-theme-bg-color', tg.backgroundColor);
+        document.documentElement.style.setProperty('--tg-theme-text-color', tg.themeParams.text_color || '#000000');
+        
+        return false;
       }
-      
-      // Expand the app to full height
-      tg.expand();
-      
-      // Set theme
-      document.documentElement.style.setProperty('--tg-theme-bg-color', tg.backgroundColor);
-      document.documentElement.style.setProperty('--tg-theme-text-color', tg.themeParams.text_color || '#000000');
-    } else {
-      console.log('Telegram WebApp NOT detected, checking URL params');
-      // Development mode - use URL param
-      const params = new URLSearchParams(window.location.search);
-      const telegramId = params.get('telegram_id');
-      if (telegramId) {
-        api.setAuth(telegramId);
-        setUser({
-          id: parseInt(telegramId),
-          first_name: 'Test User',
-        });
-      }
+      return false;
+    };
+
+    // Try to initialize immediately
+    if (initTelegram()) {
+      return;
     }
+
+    // If not successful, retry a few times (Telegram WebApp might load async)
+    const retryInit = () => {
+      initAttempts.current++;
+      console.log(`Retry init attempt ${initAttempts.current}`);
+      
+      if (initTelegram()) {
+        return;
+      }
+      
+      // Try up to 10 times with increasing delays
+      if (initAttempts.current < 10) {
+        setTimeout(retryInit, initAttempts.current * 100);
+      } else {
+        // Give up - check for development mode
+        console.log('Telegram WebApp NOT detected after retries, checking URL params');
+        const params = new URLSearchParams(window.location.search);
+        const telegramId = params.get('telegram_id');
+        if (telegramId) {
+          api.setAuth(telegramId);
+          setUser({
+            id: parseInt(telegramId),
+            first_name: 'Test User',
+          });
+          setIsReady(true);
+          setAuthReady();
+        } else {
+          // No auth available - still mark as ready but with no user
+          console.warn('No authentication available');
+          setIsReady(true);
+          setAuthReady();
+        }
+      }
+    };
+
+    // Start retry after a short delay
+    setTimeout(retryInit, 50);
   }, []);
 
   const hapticFeedback = useCallback((type: 'light' | 'medium' | 'heavy' | 'rigid' | 'soft' = 'light') => {
@@ -68,7 +156,7 @@ export function useTelegram() {
     webApp?.close();
   }, [webApp]);
 
-  return { webApp, user, hapticFeedback, showAlert, close };
+  return { webApp, user, isReady, hapticFeedback, showAlert, close };
 }
 
 // Hook for dashboard data
@@ -81,6 +169,8 @@ export function useDashboard() {
     try {
       setLoading(true);
       setError(null);
+      // Wait for auth to be ready before making API call
+      await waitForAuth();
       const result = await api.getDashboard();
       setData(result);
     } catch (err) {
@@ -107,6 +197,7 @@ export function useSavingsGoals() {
     try {
       setLoading(true);
       setError(null);
+      await waitForAuth();
       const result = await api.getGoals();
       setGoals(result);
     } catch (err) {
@@ -168,6 +259,7 @@ export function useTransactions() {
     try {
       setLoading(true);
       setError(null);
+      await waitForAuth();
       const result = await api.getTransactions(options);
       setTransactions(result);
     } catch (err) {
@@ -209,6 +301,7 @@ export function useCategories() {
   const refresh = useCallback(async (type?: 'income' | 'expense') => {
     try {
       setLoading(true);
+      await waitForAuth();
       const result = await api.getCategories(type);
       setCategories(result);
     } catch (err) {
